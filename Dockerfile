@@ -36,7 +36,7 @@ RUN set -xe \
 
 # 安装项目依赖
 RUN set -xe \
-    && apk add --no-cache nginx redis nodejs supervisor git bash openssh-client rsync \
+    && apk add --no-cache nginx redis nodejs supervisor git bash openssh-client rsync mysql-client \
     && npm config set registry http://registry.npm.taobao.org/ \
     && composer install -o \
     && npm install --production \
@@ -45,12 +45,14 @@ RUN set -xe \
     && chmod -R 777 public/upload \
     && mkdir -p /etc/supervisor/conf.d \
     && echo '* * * * * /usr/bin/php /var/www/piplin/artisan schedule:run >> /dev/null 2>&1' > /etc/crontabs/root
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+
 COPY supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 COPY supervisor/piplin.conf /etc/supervisor/conf.d/piplin.conf
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/piplin.template /etc/nginx/conf.d/default.conf
 COPY .env.docker /var/www/piplin/.env
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY entrypoint-mysql.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 80
 

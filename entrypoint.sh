@@ -8,7 +8,7 @@ initialize_system() {
 
     APP_ENV=${APP_ENV:-development}
     APP_DEBUG=${APP_DEBUG:-true}
-    DB_CONNECTION=${DB_CONNECTION:-sqlite}
+    DB_CONNECTION=${DB_CONNECTION:-mysql}
     DB_HOST=${DB_HOST:-piplin-mysql}
     DB_DATABASE=${DB_DATABASE:-piplin}
     DB_PREFIX=${DB_PREFIX}
@@ -99,6 +99,7 @@ start_system() {
     initialize_system
     check_database
     check_config
+    init_db
     echo "Starting Piplin! ..."
     php artisan config:cache
     /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
